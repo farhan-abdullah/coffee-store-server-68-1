@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 	res.send(`Coffee maker is running `);
 });
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // console.log(process.env.DB_USER);
 // console.log(process.env.DB_PASS);
@@ -41,6 +41,20 @@ async function run() {
 		app.get('/coffee', async (req, res) => {
 			const cursor = coffeeCollection.find();
 			const result = await cursor.toArray();
+			res.send(result);
+		});
+		//in order to update we need to capture the perticuler data
+		app.get('/coffee/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = coffeeCollection.findOne(query);
+			res.send(result);
+		});
+		// to delete data
+		app.delete('/coffee/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await coffeeCollection.deleteOne(query);
 			res.send(result);
 		});
 		// Send a ping to confirm a successful connection
